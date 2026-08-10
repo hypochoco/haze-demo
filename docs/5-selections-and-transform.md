@@ -2,6 +2,8 @@
 
 Selections constrain painting and can be modified by the Move tool and Transforms.
 
+![Haze main app](images/selection.png)
+
 ## Making selections
 
 - **Lasso** (`L`) - freehand

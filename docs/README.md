@@ -2,6 +2,8 @@
 
 Documentation that covers the current behavior and features in the Haze Demo (**v0.1.0**).
 
+![Haze main app](images/welcome-screen.png)
+
 > **Requires macOS 14 (Sonoma) or later on an Apple silicon Mac (M1 or later).**
 > Intel Macs are not supported. See the main [README](../README.md) for download + install.
 
