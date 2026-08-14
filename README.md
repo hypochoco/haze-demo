@@ -4,7 +4,7 @@ Haze is intended to be a native macOS photo-editing and painting app, built with
 
 > ⚠️ **Alpha software (v0.1.0).** Haze is under active development. It may crash, and file formats or behavior may change between builds. **Do not use it for important work, and keep backups of anything you care about.**
 
-![Haze main app](docs/images/main-app-with-brush-stroke.png)
+![Haze main app](docs/images/main-app-demo.png)
 
 ## Features
 
