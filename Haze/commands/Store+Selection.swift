@@ -80,10 +80,11 @@ extension Store {
         var inverted = current
         for i in 0..<inverted.count { inverted[i] = 255 - inverted[i] }
         let (b, active) = Self.boundsOfNonZero(inverted, width: full.width, height: full.height)
+        let path = active ? SelectionContourTracer.trace(mask: inverted, width: full.width, height: full.height) : []
         applyMaskChange(title: title, mutate: { s in
             s.clear(); s.write(full, bytes: inverted)
         }, newState: { version in
-            active ? SelectionState(isActive: true, bounds: b, version: version, path: []) : .none
+            active ? SelectionState(isActive: true, bounds: b, version: version, path: path) : .none
         })
     }
 
