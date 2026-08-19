@@ -68,7 +68,7 @@ final class InputView: NSView {
         cancellable = store.$document
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.scheduleRender() }
-        editorCancellable = store.$editor
+        editorCancellable = store.editorStore.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.editorStateChanged() }
         uiCancellable = ui.$showCommandPalette

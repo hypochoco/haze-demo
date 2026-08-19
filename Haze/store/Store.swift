@@ -11,7 +11,11 @@ import Metal
 @MainActor
 final class Store: ObservableObject {
     @Published private(set) var document: Document
-    @Published var editor = EditorState()
+    let editorStore = EditorStore()
+    var editor: EditorState {
+        get { editorStore.state }
+        set { editorStore.state = newValue }
+    }
     let render: RenderContext
     let config: Config
     let notices = NoticeCenter()
@@ -321,10 +325,11 @@ final class Store: ObservableObject {
 
     func record(_ command: Command) {
         guard let h = activeHistory else { return }
+        let couldUndo = h.canUndo, couldRedo = h.canRedo
         h.record(command)
         bumpContent(command.affectedLayers)
         markDirty(document.activeCanvasID)
-        objectWillChange.send()
+        if h.canUndo != couldUndo || h.canRedo != couldRedo { objectWillChange.send() }
         Log.history.debug("recorded \(command.title, privacy: .public)")
     }
 
@@ -336,7 +341,7 @@ final class Store: ObservableObject {
 
     var hasUnsavedChanges: Bool { !dirtyCanvasIDs.isEmpty }
     func isDirty(_ id: CanvasID) -> Bool { dirtyCanvasIDs.contains(id) }
-    func markDirty(_ id: CanvasID?) { if let id { dirtyCanvasIDs.insert(id) } }
+    func markDirty(_ id: CanvasID?) { if let id, !dirtyCanvasIDs.contains(id) { dirtyCanvasIDs.insert(id) } }
     func markSaved(_ id: CanvasID) { dirtyCanvasIDs.remove(id) }
 
     func undo() {

@@ -3,6 +3,8 @@
 //  Haze — store
 //
 
+import Combine
+
 struct EditorState: Equatable {
     var activeTool: ToolKind = .brush
 
@@ -17,4 +19,10 @@ struct EditorState: Equatable {
         get { self[paint: activeTool.paintSlot] }
         set { self[paint: activeTool.paintSlot] = newValue }
     }
+}
+
+
+@MainActor
+final class EditorStore: ObservableObject {
+    @Published var state = EditorState()
 }

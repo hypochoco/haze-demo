@@ -7,9 +7,15 @@ import SwiftUI
 
 struct BrushPanelContent: View {
     @ObservedObject var store: Store
+    @ObservedObject var editorStore: EditorStore
     @EnvironmentObject private var presets: BrushPresetStore
     @EnvironmentObject private var tips: BrushTipStore
     @StateObject private var previews = BrushPreviewCache()
+
+    init(store: Store) {
+        self.store = store
+        self.editorStore = store.editorStore
+    }
 
     @State private var gridView = true
     @State private var renaming: BrushPreset.ID?
@@ -33,11 +39,11 @@ struct BrushPanelContent: View {
             strokeStrip
             Divider()
             ColorPicker("Color", selection: colorBinding, supportsOpacity: true)
-            LabeledSlider(title: "Size", value: $store.editor.brush.size, range: 1...300, format: "%.0f px")
-            LabeledSlider(title: "Hardness", value: $store.editor.brush.hardness, range: 0...1)
-            LabeledSlider(title: "Opacity", value: $store.editor.brush.opacity, range: 0...1)
-            LabeledSlider(title: "Flow", value: $store.editor.brush.flow, range: 0...1)
-            LabeledSlider(title: "Spacing", value: $store.editor.brush.spacing, range: 0.01...1)
+            LabeledSlider(title: "Size", value: $editorStore.state.brush.size, range: 1...300, format: "%.0f px")
+            LabeledSlider(title: "Hardness", value: $editorStore.state.brush.hardness, range: 0...1)
+            LabeledSlider(title: "Opacity", value: $editorStore.state.brush.opacity, range: 0...1)
+            LabeledSlider(title: "Flow", value: $editorStore.state.brush.flow, range: 0...1)
+            LabeledSlider(title: "Spacing", value: $editorStore.state.brush.spacing, range: 0.01...1)
             Divider()
             shapeSection
             Divider()
@@ -209,18 +215,18 @@ struct BrushPanelContent: View {
                         Text(tipName).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                     }
                     VStack(spacing: 2) {
-                        RotationDial(angleDegrees: $store.editor.brush.angle)
+                        RotationDial(angleDegrees: $editorStore.state.brush.angle)
                             .frame(width: 44, height: 44)
                         Text("Rotation").font(.caption2).foregroundStyle(.secondary)
                     }
                     Spacer()
                 }
-                LabeledSlider(title: "Angle", value: $store.editor.brush.angle, range: 0...360, format: "%.0f°")
-                LabeledSlider(title: "Roundness", value: $store.editor.brush.roundness, range: 0.05...1)
-                LabeledSlider(title: "Scatter", value: $store.editor.brush.scatter, range: 0...1)
-                LabeledSlider(title: "Size Jitter", value: $store.editor.brush.sizeJitter, range: 0...1)
-                LabeledSlider(title: "Angle Jitter", value: $store.editor.brush.angleJitter, range: 0...1)
-                Toggle("Angle follows direction", isOn: $store.editor.brush.angleFollowsDirection)
+                LabeledSlider(title: "Angle", value: $editorStore.state.brush.angle, range: 0...360, format: "%.0f°")
+                LabeledSlider(title: "Roundness", value: $editorStore.state.brush.roundness, range: 0.05...1)
+                LabeledSlider(title: "Scatter", value: $editorStore.state.brush.scatter, range: 0...1)
+                LabeledSlider(title: "Size Jitter", value: $editorStore.state.brush.sizeJitter, range: 0...1)
+                LabeledSlider(title: "Angle Jitter", value: $editorStore.state.brush.angleJitter, range: 0...1)
+                Toggle("Angle follows direction", isOn: $editorStore.state.brush.angleFollowsDirection)
                     .font(.caption).toggleStyle(.checkbox)
             }
         }
@@ -233,9 +239,9 @@ struct BrushPanelContent: View {
         VStack(alignment: .leading, spacing: 8) {
             sectionHeader("Pressure", $pressureExpanded)
             if pressureExpanded {
-                LabeledSlider(title: "→ Size", value: $store.editor.brush.pressureSize, range: 0...1)
-                LabeledSlider(title: "→ Flow", value: $store.editor.brush.pressureFlow, range: 0...1)
-                LabeledSlider(title: "→ Opacity", value: $store.editor.brush.pressureOpacity, range: 0...1)
+                LabeledSlider(title: "→ Size", value: $editorStore.state.brush.pressureSize, range: 0...1)
+                LabeledSlider(title: "→ Flow", value: $editorStore.state.brush.pressureFlow, range: 0...1)
+                LabeledSlider(title: "→ Opacity", value: $editorStore.state.brush.pressureOpacity, range: 0...1)
             }
         }
     }
