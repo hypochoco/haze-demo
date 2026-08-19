@@ -8,8 +8,14 @@ import simd
 
 struct ColorPanelContent: View {
     @ObservedObject var store: Store
+    @ObservedObject var editorStore: EditorStore
     @State private var hsv = HSVColor(h: 0, s: 0, v: 0, a: 1)
     @State private var hexText = "000000"
+
+    init(store: Store) {
+        self.store = store
+        self.editorStore = store.editorStore
+    }
 
     var body: some View {
         VStack(spacing: 8) {
