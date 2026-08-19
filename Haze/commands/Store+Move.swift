@@ -5,6 +5,7 @@
 
 import Metal
 import simd
+import Combine
 
 struct FloatingSelection {
     let layerID: LayerID
@@ -95,14 +96,14 @@ extension Store {
         floating = FloatingSelection(layerID: lift.layerID, sourceBounds: lift.sourceBounds, offset: .zero,
                                      floatTex: lift.floatTex, erasedBytes: lift.erasedBytes,
                                      srcBeforeBytes: lift.srcBeforeBytes, maskBefore: lift.maskBefore)
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
         bumpContent([lift.layerID])
     }
 
     func setFloatingOffset(_ offset: SIMD2<Float>) {
         guard floating != nil else { return }
         floating?.offset = offset
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
     }
 
     func cancelFloatingMove() {
@@ -110,7 +111,7 @@ extension Store {
               let store = render.resources.store(for: .layer(f.layerID), canvas: canvas) else { floating = nil; return }
         store.write(f.sourceBounds, bytes: f.srcBeforeBytes)
         floating = nil
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
         bumpContent([f.layerID])
     }
 
@@ -137,7 +138,7 @@ extension Store {
 
         let maskAfter = translateMask(maskStore, canvas: canvas, dx: dx, dy: dy)
 
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
         bumpContent([f.layerID])
 
         guard let pe else { return }

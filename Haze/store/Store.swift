@@ -28,7 +28,7 @@ final class Store: ObservableObject {
     private let brushTool = BrushTool()
 
     var floating: FloatingSelection?
-    @Published var floatingVersion = 0
+    let canvasNeedsDisplay = PassthroughSubject<Void, Never>()
 
     var floatingTransform: FloatingTransform?
 

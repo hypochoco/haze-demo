@@ -15,6 +15,7 @@ final class InputView: NSView {
     private var cancellable: AnyCancellable?
     private var editorCancellable: AnyCancellable?
     private var uiCancellable: AnyCancellable?
+    private var redrawCancellable: AnyCancellable?
     private var displayLink: CADisplayLink?
     private var pendingRender = false
 
@@ -73,6 +74,9 @@ final class InputView: NSView {
         uiCancellable = ui.$showCommandPalette
             .receive(on: DispatchQueue.main)
             .sink { [weak self] open in self?.setInputSuspended(open) }
+        redrawCancellable = store.canvasNeedsDisplay
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.scheduleRender() }
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) unavailable") }

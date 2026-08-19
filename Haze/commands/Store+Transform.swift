@@ -5,6 +5,7 @@
 
 import Metal
 import simd
+import Combine
 
 enum Affine {
     static func translate(_ t: SIMD2<Float>) -> simd_float3x3 {
@@ -70,14 +71,14 @@ extension Store {
                                               floatTex: lift.floatTex, erasedBytes: lift.erasedBytes,
                                               srcBeforeBytes: lift.srcBeforeBytes, maskBefore: lift.maskBefore,
                                               matrix: matrix_identity_float3x3)
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
         bumpContent([lift.layerID])
     }
 
     func setTransformMatrix(_ m: simd_float3x3) {
         guard floatingTransform != nil else { return }
         floatingTransform?.matrix = m
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
     }
 
     func cancelFloatingTransform() {
@@ -87,7 +88,7 @@ extension Store {
         }
         store.write(f.sourceBounds, bytes: f.srcBeforeBytes)
         floatingTransform = nil
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
         bumpContent([f.layerID])
     }
 
@@ -112,7 +113,7 @@ extension Store {
 
         let maskAfter = transformMask(maskStore, canvas: canvas, matrix: f.matrix)
 
-        floatingVersion &+= 1
+        canvasNeedsDisplay.send()
         bumpContent([f.layerID])
 
         guard let pe else { return }
