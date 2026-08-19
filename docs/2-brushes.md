@@ -2,7 +2,7 @@
 
 Haze's brush engine is GPU-accelerated with support for pressure-sensitive tablets. Painting deposits brushstrokes onto the active layer with undo capabilities.
 
-![Haze main app](images/brush-panel.png)
+![Haze main app](images/brush-panel.webp)
 
 ## Tools
 

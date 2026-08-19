@@ -2,7 +2,7 @@
 
 Selections constrain painting and can be modified by the Move tool and Transforms.
 
-![Haze main app](images/selection.png)
+![Haze main app](images/selection.webp)
 
 ## Making selections
 
