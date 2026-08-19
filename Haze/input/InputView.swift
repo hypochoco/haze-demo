@@ -27,6 +27,7 @@ final class InputView: NSView {
     private var pointerInside = false
     private var osCursorHidden = false
     private var lastMouseView: CGPoint?
+    private var outlineCache: [UUID: [[CGPoint]]] = [:]
 
     private var camera = Camera()
     private var cameraReady = false
@@ -277,17 +278,45 @@ final class InputView: NSView {
 
     private func updateCursorGeometry() {
         guard let c = cursorContainer else { return }
-        let d = max(1, CGFloat(store.editor.brush.size) * CGFloat(camera.zoom))
+        let radiusView = max(0.5, CGFloat(store.editor.brush.size) * CGFloat(camera.zoom) / 2)
+        let b = store.editor.brush
+        let angle = CGFloat(b.angleRadians)
+        let roundness = CGFloat(b.roundness)
+        let contours = b.tipID.map { cachedTipContours($0) } ?? BrushCursorOutline.roundContour()
+        let placed = BrushCursorOutline.place(contours, radiusView: radiusView, angle: angle, roundness: roundness)
+
+        var maxExtent = radiusView
+        for loop in placed { for p in loop { maxExtent = max(maxExtent, max(abs(p.x), abs(p.y))) } }
         let pad: CGFloat = 4
-        let side = d + pad
+        let side = 2 * maxExtent + pad
+        let mid = side / 2
+
+        let path = CGMutablePath()
+        for loop in placed where loop.count >= 2 {
+            path.move(to: CGPoint(x: mid + loop[0].x, y: mid + loop[0].y))
+            for i in 1..<loop.count { path.addLine(to: CGPoint(x: mid + loop[i].x, y: mid + loop[i].y)) }
+            path.closeSubpath()
+        }
+
         CATransaction.begin(); CATransaction.setDisableActions(true)
         c.bounds = CGRect(x: 0, y: 0, width: side, height: side)
         for l in [cursorBack, cursorFront, cursorDot] { l.frame = c.bounds }
-        let ring = CGPath(ellipseIn: CGRect(x: pad / 2, y: pad / 2, width: d, height: d), transform: nil)
-        cursorBack.path = ring; cursorFront.path = ring
-        let mid = side / 2
+        cursorBack.path = path; cursorFront.path = path
         cursorDot.path = CGPath(ellipseIn: CGRect(x: mid - 0.75, y: mid - 0.75, width: 1.5, height: 1.5), transform: nil)
         CATransaction.commit()
+    }
+
+    private func cachedTipContours(_ id: UUID) -> [[CGPoint]] {
+        if let cached = outlineCache[id] { return cached }
+        let contours: [[CGPoint]]
+        if let (bytes, w) = store.render.tipCoverage(for: id) {
+            let c = BrushCursorOutline.tipContours(coverage: bytes, width: w)
+            contours = c.isEmpty ? BrushCursorOutline.roundContour() : c
+        } else {
+            contours = BrushCursorOutline.roundContour()
+        }
+        outlineCache[id] = contours
+        return contours
     }
 
     private func placeCursor(at p: CGPoint) {

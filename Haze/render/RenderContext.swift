@@ -545,6 +545,10 @@ final class RenderContext {
         return RenderContext.cgImage(from: dst)
     }
 
+    func tipCoverage(for id: UUID) -> (bytes: [UInt8], width: Int)? {
+        BrushTipCatalog.coverage(for: id)
+    }
+
     func tipTexture(for id: UUID) -> MTLTexture? {
         if let t = tipTextureCache[id] { return t }
         guard let (bytes, w) = BrushTipCatalog.coverage(for: id) else { return nil }
