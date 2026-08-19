@@ -150,19 +150,25 @@ vertex BrushOut brush_vertex(uint vid [[vertex_id]],
     return o;
 }
 
-fragment float4 brush_frag(BrushOut in [[stage_in]],
-                           constant BrushUniforms& u [[buffer(0)]]) {
-    float d = length(in.local);
-    float a = 1.0 - smoothstep(u.hardness, 1.0, d);
-    float alpha = u.color.a * a * u.flow;
-    return float4(u.color.rgb * alpha, alpha);
-}
-
 static inline float2 tip_uv(float2 local, float angle, float roundness) {
     float c = cos(angle), s = sin(angle);
     float2 r = float2(local.x * c + local.y * s, -local.x * s + local.y * c);
     r.y /= max(roundness, 0.05);
     return r;
+}
+
+static inline float tip_hardness(float coverage, float hardness) {
+    float w = max(0.5 * (1.0 - hardness), 0.001);
+    return smoothstep(0.5 - w, 0.5 + w, coverage);
+}
+
+fragment float4 brush_frag(BrushOut in [[stage_in]],
+                           constant BrushUniforms& u [[buffer(0)]]) {
+    float2 p = tip_uv(in.local, u.angle, u.roundness);
+    float d = length(p);
+    float a = 1.0 - smoothstep(u.hardness, 1.0, d);
+    float alpha = u.color.a * a * u.flow;
+    return float4(u.color.rgb * alpha, alpha);
 }
 
 fragment float4 brush_textured_frag(BrushOut in [[stage_in]],
@@ -172,6 +178,7 @@ fragment float4 brush_textured_frag(BrushOut in [[stage_in]],
     float2 r = tip_uv(in.local * u.footprint, u.angle, u.roundness);
     if (any(abs(r) > 1.0)) return float4(0.0);
     float coverage = tip.sample(samp, r * (u.tipContent * 0.5) + 0.5).r;
+    coverage = tip_hardness(coverage, u.hardness);
     float alpha = u.color.a * coverage * u.flow;
     return float4(u.color.rgb * alpha, alpha);
 }
@@ -183,13 +190,15 @@ fragment float4 brush_textured_ceiling_frag(BrushOut in [[stage_in]],
     float2 r = tip_uv(in.local * u.footprint, u.angle, u.roundness);
     if (any(abs(r) > 1.0)) discard_fragment();
     float coverage = tip.sample(samp, r * (u.tipContent * 0.5) + 0.5).r;
+    coverage = tip_hardness(coverage, u.hardness);
     if (coverage <= 0.0) discard_fragment();
     return float4(u.opacityCeil, 0.0, 0.0, u.opacityCeil);
 }
 
 fragment float4 brush_ceiling_frag(BrushOut in [[stage_in]],
                                    constant BrushUniforms& u [[buffer(0)]]) {
-    float d = length(in.local);
+    float2 p = tip_uv(in.local, u.angle, u.roundness);
+    float d = length(p);
     float a = 1.0 - smoothstep(u.hardness, 1.0, d);
     if (a <= 0.0) discard_fragment();
     return float4(u.opacityCeil, 0.0, 0.0, u.opacityCeil);
