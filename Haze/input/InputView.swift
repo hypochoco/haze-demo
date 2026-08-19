@@ -46,6 +46,8 @@ final class InputView: NSView {
     private var moveStart: SIMD2<Float> = .zero
 
     let txOverlay = CAShapeLayer()
+    private let gradientGuide = CAShapeLayer()
+    private var gradientGuideInstalled = false
     private var txInstalled = false
     private enum TxMode { case none, translate, rotate, scale }
     private var txMode: TxMode = .none
@@ -671,6 +673,7 @@ final class InputView: NSView {
         guard let metalLayer else { return }
         installAntsIfNeeded(on: metalLayer)
         installTxIfNeeded(on: metalLayer)
+        installGradientGuideIfNeeded(on: metalLayer)
         CATransaction.begin(); CATransaction.setDisableActions(true)
 
         if let canvas = store.activeCanvas {
@@ -704,9 +707,17 @@ final class InputView: NSView {
             } else {
                 txOverlay.isHidden = true
             }
+            if store.editor.activeTool == .gradient, let gs = gradientStart, let ge = gradientEnd {
+                gradientGuide.frame = bounds
+                gradientGuide.path = gradientGuidePath(from: gs, to: ge)
+                gradientGuide.isHidden = false
+            } else {
+                gradientGuide.isHidden = true
+            }
         } else {
             antsCommitted.isHidden = true; antsCommittedBack.isHidden = true; antsDraft.isHidden = true
             txOverlay.isHidden = true
+            gradientGuide.isHidden = true
         }
         CATransaction.commit()
     }
@@ -736,6 +747,33 @@ final class InputView: NSView {
         txOverlay.contentsScale = window?.backingScaleFactor ?? 2
         layer.addSublayer(txOverlay)
         txInstalled = true
+    }
+
+    private func installGradientGuideIfNeeded(on layer: CALayer) {
+        guard !gradientGuideInstalled else { return }
+        gradientGuide.zPosition = 951
+        gradientGuide.fillColor = NSColor.white.cgColor
+        gradientGuide.strokeColor = NSColor.white.cgColor
+        gradientGuide.lineWidth = 1.5
+        gradientGuide.shadowColor = NSColor.black.cgColor
+        gradientGuide.shadowOpacity = 0.85
+        gradientGuide.shadowRadius = 1.2
+        gradientGuide.shadowOffset = .zero
+        gradientGuide.contentsScale = window?.backingScaleFactor ?? 2
+        layer.addSublayer(gradientGuide)
+        gradientGuideInstalled = true
+    }
+
+    private func gradientGuidePath(from s: SIMD2<Float>, to e: SIMD2<Float>) -> CGPath {
+        let a = camera.viewPoint(s, viewPoints: boundsPts)
+        let b = camera.viewPoint(e, viewPoints: boundsPts)
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: CGFloat(a.x), y: CGFloat(a.y)))
+        path.addLine(to: CGPoint(x: CGFloat(b.x), y: CGFloat(b.y)))
+        let r: CGFloat = 3
+        path.addEllipse(in: CGRect(x: CGFloat(a.x) - r, y: CGFloat(a.y) - r, width: 2 * r, height: 2 * r))
+        path.addEllipse(in: CGRect(x: CGFloat(b.x) - r, y: CGFloat(b.y) - r, width: 2 * r, height: 2 * r))
+        return path
     }
 
     private func installAntsIfNeeded(on layer: CALayer) {

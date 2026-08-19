@@ -32,8 +32,23 @@ struct GradientPanelContent: View {
 
                     Toggle("Reverse", isOn: reverseBinding).font(.caption)
 
+                    Divider()
+
+                    HStack(spacing: 6) {
+                        Text("Colour Ramp").font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Reset") {
+                            store.editor.gradient.stops =
+                                store.editor.gradient.effectiveStops(foreground: store.foregroundColor)
+                        }
+                        .buttonStyle(.borderless).font(.caption2).help("Reset to Foreground → Transparent")
+                    }
+                    GradientRampEditor(stops: stopsBinding,
+                                       space: store.activeCanvas?.colorMode.space ?? .sRGB,
+                                       foreground: store.foregroundColor)
+
                     Text(store.editor.activeTool == .gradient
-                         ? "Drag start → end on the canvas to fill (Foreground → Transparent)."
+                         ? "Drag start → end on the canvas to fill."
                          : "Select the Gradient tool (G) to draw.")
                         .font(.caption2).foregroundStyle(.tertiary)
 
@@ -49,5 +64,8 @@ struct GradientPanelContent: View {
     }
     private var reverseBinding: Binding<Bool> {
         Binding(get: { store.editor.gradient.reverse }, set: { store.editor.gradient.reverse = $0 })
+    }
+    private var stopsBinding: Binding<[GradientStop]> {
+        Binding(get: { store.editor.gradient.stops }, set: { store.editor.gradient.stops = $0 })
     }
 }
