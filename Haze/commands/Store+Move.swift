@@ -56,20 +56,22 @@ extension Store {
         if bpp == 8 {
             for i in 0..<n {
                 let cov = Float(maskBytes[i]) / 255
+                let m = maskBytes[i]
                 for c in 0..<4 {
                     let o = i * 8 + c * 2
                     let v = Float(UInt16(layerBytes[o]) | (UInt16(layerBytes[o + 1]) << 8))
                     Self.putLE16(&floatB, o, v * cov)
-                    Self.putLE16(&erased, o, v * (1 - cov))
+                    if m == 0 { erased[o] = layerBytes[o]; erased[o + 1] = layerBytes[o + 1] }
                 }
             }
         } else {
             for i in 0..<n {
                 let cov = Float(maskBytes[i]) / 255
+                let m = maskBytes[i]
                 for c in 0..<4 {
                     let v = Float(layerBytes[i * 4 + c])
                     floatB[i * 4 + c] = UInt8((v * cov).rounded())
-                    erased[i * 4 + c] = UInt8((v * (1 - cov)).rounded())
+                    if m == 0 { erased[i * 4 + c] = layerBytes[i * 4 + c] }
                 }
             }
         }
