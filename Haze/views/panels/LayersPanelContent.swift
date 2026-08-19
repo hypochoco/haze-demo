@@ -45,7 +45,6 @@ private struct LayerDropDelegate: DropDelegate {
 
 struct LayersPanelContent: View {
     @ObservedObject var store: Store
-    @StateObject private var thumbs = LayerThumbnailCache()
     @State private var opacityDragStart: Float?
     @State private var dragging: LayerID?
     @State private var dropHint: DropHint?
@@ -343,16 +342,7 @@ struct LayersPanelContent: View {
 
     @ViewBuilder
     private func thumbnail(_ layer: Layer) -> some View {
-        let version = store.layerContentVersion(layer.id)
-        let image = store.activeCanvas.flatMap {
-            thumbs.image(for: .layer(layer.id), version: version, canvas: $0, render: store.render)
-        }
-        ZStack {
-            RoundedRectangle(cornerRadius: 3).fill(Color(nsColor: .textBackgroundColor))
-            if let image { Image(decorative: image, scale: 1).resizable().scaledToFit() }
-            RoundedRectangle(cornerRadius: 3).stroke(.secondary.opacity(0.4))
-        }
-        .frame(width: 32, height: 32)
+        LayerThumbnailView(store: store, layerID: layer.id)
     }
 
     @ViewBuilder

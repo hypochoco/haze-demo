@@ -32,14 +32,13 @@ final class Store: ObservableObject {
 
     var floatingTransform: FloatingTransform?
 
-    @Published private(set) var layerContentVersions: [LayerID: Int] = [:]
-    private var contentVersionSeq = 0
+    let contentVersions = ContentVersions()
+    let thumbnailCache = LayerThumbnailCache()
 
-    func layerContentVersion(_ id: LayerID) -> Int { layerContentVersions[id] ?? 0 }
+    func layerContentVersion(_ id: LayerID) -> Int { contentVersions.version(id) }
 
     func bumpContent(_ ids: [LayerID]) {
-        guard !ids.isEmpty else { return }
-        for id in ids { contentVersionSeq += 1; layerContentVersions[id] = contentVersionSeq }
+        contentVersions.bump(ids)
     }
 
     init(document: Document, render: RenderContext, config: Config) {
