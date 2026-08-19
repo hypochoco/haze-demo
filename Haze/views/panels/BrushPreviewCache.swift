@@ -11,8 +11,8 @@ import simd
 @MainActor
 final class BrushPreviewCache: ObservableObject {
     nonisolated let objectWillChange = ObservableObjectPublisher()
-    private var icons: [String: CGImage] = [:]
-    private var tipIcons: [String: CGImage] = [:]
+    private var icons = BoundedCache<String, CGImage>(capacity: 96)
+    private var tipIcons = BoundedCache<String, CGImage>(capacity: 96)
     private var stripKey: String?
     private var stripImage: CGImage?
 
