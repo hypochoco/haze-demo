@@ -374,7 +374,7 @@ final class Store: ObservableObject {
             case .moved: strokeMoved(p, pressure: pressure)
             case .ended: strokeEnded(p, pressure: pressure)
             }
-        case .lasso, .polygonLasso, .move, .transform, .eyedropper:
+        case .lasso, .polygonLasso, .move, .transform, .eyedropper, .gradient:
             break
         }
     }

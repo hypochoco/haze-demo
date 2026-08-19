@@ -13,6 +13,7 @@ enum ToolKind: String, CaseIterable, Identifiable {
     case polygonLasso
     case move
     case transform
+    case gradient
 
     var id: String { rawValue }
 
@@ -25,6 +26,7 @@ enum ToolKind: String, CaseIterable, Identifiable {
         case .polygonLasso: return "Polygon Lasso"
         case .move:         return "Move Selection"
         case .transform:    return "Free Transform"
+        case .gradient:     return "Gradient"
         }
     }
 
@@ -37,6 +39,7 @@ enum ToolKind: String, CaseIterable, Identifiable {
         case .polygonLasso: return "scribble"
         case .move:         return "arrow.up.and.down.and.arrow.left.and.right"
         case .transform:    return "crop.rotate"
+        case .gradient:     return "circle.lefthalf.filled"
         }
     }
 

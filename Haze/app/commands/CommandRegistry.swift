@@ -68,6 +68,9 @@ enum CommandRegistry {
         AppAction(id: "tool.transform", title: "Free Transform Tool", category: .tool, keywords: ["scale", "rotate"],
                   shortcut: ActionShortcut("t", [.command]),
                   isEnabled: { $0.store.hasCanvas }, run: { $0.store.editor.activeTool = .transform }),
+        AppAction(id: "tool.gradient", title: "Gradient Tool", category: .tool, keywords: ["fill", "ramp", "linear", "radial"],
+                  shortcut: ActionShortcut("g", []),
+                  isEnabled: { $0.store.hasCanvas }, run: { $0.store.editor.activeTool = .gradient }),
 
         AppAction(id: "brush.decreaseSize", title: "Decrease Brush Size", category: .tool, keywords: ["smaller", "["],
                   shortcut: ActionShortcut("[", []),

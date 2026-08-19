@@ -21,6 +21,10 @@ enum PanelRegistry {
                       placement: .dockTrailing, defaultVisible: true) { store in
                 AnyView(LayersPanelContent(store: store))
             },
+            PanelSpec(id: .gradient, title: "Gradient", systemImage: "circle.lefthalf.filled",
+                      placement: .dockTrailing, defaultVisible: false) { store in
+                AnyView(GradientPanelContent(store: store))
+            },
             PanelSpec(id: .info, title: "Info", systemImage: "info.circle",
                       placement: .popover, defaultVisible: false) { store in
                 AnyView(InfoPanelContent(store: store))

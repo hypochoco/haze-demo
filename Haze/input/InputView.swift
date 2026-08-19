@@ -57,6 +57,8 @@ final class InputView: NSView {
     private var txDraggedLocal: SIMD2<Float> = .zero
     private var txScaleX = false, txScaleY = false
     private var lastActiveTool: ToolKind = .brush
+    private var gradientStart: SIMD2<Float>?
+    private var gradientEnd: SIMD2<Float>?
 
     init(store: Store, ui: AppUIState) {
         self.store = store
@@ -124,6 +126,7 @@ final class InputView: NSView {
         else if tool.isSelection { selectionMouseDown(canvasPoint(event), event.modifierFlags) }
         else if tool == .move { moveMouseDown(canvasPoint(event)) }
         else if tool == .transform { transformMouseDown(event) }
+        else if tool == .gradient { gradientMouseDown(canvasPoint(event)) }
         else { store.toolInput(canvasPoint(event), pressure: pressure(event), phase: .begin) }
         scheduleRender()
     }
@@ -134,6 +137,7 @@ final class InputView: NSView {
         else if tool.isSelection { selectionMouseDragged(canvasPoint(event)) }
         else if tool == .move { moveMouseDragged(canvasPoint(event)) }
         else if tool == .transform { transformMouseDragged(event) }
+        else if tool == .gradient { gradientMouseDragged(canvasPoint(event)) }
         else { store.toolInput(canvasPoint(event), pressure: pressure(event), phase: .moved) }
         scheduleRender()
     }
@@ -144,8 +148,19 @@ final class InputView: NSView {
         else if tool.isSelection { selectionMouseUp(canvasPoint(event)) }
         else if tool == .move { moveMouseUp(canvasPoint(event)) }
         else if tool == .transform { transformMouseUp(event) }
+        else if tool == .gradient { gradientMouseUp(canvasPoint(event)) }
         else { store.toolInput(canvasPoint(event), pressure: pressure(event), phase: .ended) }
         scheduleRender()
+    }
+
+    // MARK: - Gradient
+
+    private func gradientMouseDown(_ p: CanvasPoint) { gradientStart = p.simd; gradientEnd = nil }
+    private func gradientMouseDragged(_ p: CanvasPoint) { gradientEnd = p.simd }
+    private func gradientMouseUp(_ p: CanvasPoint) {
+        defer { gradientStart = nil; gradientEnd = nil }
+        guard let s = gradientStart else { return }
+        store.applyGradient(from: s, to: p.simd)
     }
 
     // MARK: - Eyedropper

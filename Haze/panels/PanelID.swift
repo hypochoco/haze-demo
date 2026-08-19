@@ -13,6 +13,7 @@ extension PanelID {
     static let color = PanelID("color")
     static let brush = PanelID("brush")
     static let layers = PanelID("layers")
+    static let gradient = PanelID("gradient")
     static let info  = PanelID("info")
     static let historyDebug = PanelID("historyDebug")
 }

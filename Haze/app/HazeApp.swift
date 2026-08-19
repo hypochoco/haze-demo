@@ -64,6 +64,7 @@ struct HazeApp: App {
                 Divider()
                 toolItem("tool.move")
                 toolItem("tool.transform")
+                toolItem("tool.gradient")
                 Divider()
                 toolItem("brush.decreaseSize")
                 toolItem("brush.increaseSize")

@@ -7,6 +7,7 @@ import Combine
 
 struct EditorState: Equatable {
     var activeTool: ToolKind = .brush
+    var gradient = GradientSettings()
 
     private var paintSettings: [ToolKind: BrushSettings] = [:]
 
