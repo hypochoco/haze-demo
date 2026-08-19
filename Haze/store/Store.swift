@@ -394,7 +394,7 @@ final class Store: ObservableObject {
 
     func renderFallbackComposite(into composite: MTLTexture) {
         guard let canvas = activeCanvas else { return }
-        Compositor.composite(canvas, into: composite, ctx: render)
+        Compositor.composite(canvas, into: composite, ctx: render, wait: false)
         guard let preview = strokePreview() else { return }
         let erasing = isErasingStroke
         let clip = overlayClipMask(for: canvas)

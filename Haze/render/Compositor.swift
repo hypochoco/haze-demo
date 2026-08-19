@@ -9,9 +9,9 @@ import Metal
 enum Compositor {
 
     @MainActor
-    static func composite(_ canvas: Canvas, into target: MTLTexture, ctx: RenderContext) {
+    static func composite(_ canvas: Canvas, into target: MTLTexture, ctx: RenderContext, wait: Bool = true) {
         Log.interval("composite") {
-            render(canvas.nodes, into: target, ctx: ctx, canvas: canvas)
+            render(canvas.nodes, into: target, ctx: ctx, canvas: canvas, wait: wait)
             #if DEBUG
             PerfCounters.composites += 1
             #endif
@@ -20,7 +20,7 @@ enum Compositor {
 
     @MainActor
     private static func render(_ nodes: [LayerNode], into target: MTLTexture,
-                               ctx: RenderContext, canvas: Canvas) {
+                               ctx: RenderContext, canvas: Canvas, wait: Bool = true) {
         let fmt = target.pixelFormat
         let set = ctx.pipelines(for: fmt)
         let w = target.width, h = target.height
@@ -29,7 +29,7 @@ enum Compositor {
         for node in nodes {
             if case .group(let g) = node, g.isVisible, g.opacity > 0, !g.children.isEmpty {
                 guard let temp = ctx.acquireCompositeTemp(width: w, height: h, format: fmt) else { continue }
-                render(g.children, into: temp, ctx: ctx, canvas: canvas)
+                render(g.children, into: temp, ctx: ctx, canvas: canvas, wait: wait)
                 groupTemps[g.id] = temp
             }
         }
@@ -64,7 +64,7 @@ enum Compositor {
             }
             enc.endEncoding()
             cb.commit()
-            cb.waitUntilCompleted()
+            if wait { cb.waitUntilCompleted() }
         }
 
         for temp in groupTemps.values { ctx.releaseCompositeTemp(temp) }

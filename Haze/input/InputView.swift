@@ -448,12 +448,12 @@ final class InputView: NSView {
         }
         if let fp = store.floatingPreview() {
             store.render.drawOver(fp.tex, into: composite, canvasRect: fp.rect,
-                                  canvasW: canvas.width, canvasH: canvas.height)
+                                  canvasW: canvas.width, canvasH: canvas.height, wait: false)
         }
         if let tp = store.floatingTransformPreview() {
             store.render.drawOverQuad(tp.tex, into: composite,
                                       topLeft: tp.tl, topRight: tp.tr, bottomLeft: tp.bl, bottomRight: tp.br,
-                                      canvasW: canvas.width, canvasH: canvas.height)
+                                      canvasW: canvas.width, canvasH: canvas.height, wait: false)
         }
 
         guard let drawable = metalLayer.nextDrawable() else { return }

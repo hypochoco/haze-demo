@@ -323,7 +323,7 @@ final class RenderContext {
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
     }
 
-    func drawOver(_ tex: MTLTexture, into dst: MTLTexture, canvasRect r: PixelRect, canvasW: Int, canvasH: Int) {
+    func drawOver(_ tex: MTLTexture, into dst: MTLTexture, canvasRect r: PixelRect, canvasW: Int, canvasH: Int, wait: Bool = true) {
         guard !r.isEmpty else { return }
         let W = Float(canvasW), H = Float(canvasH)
         let minX = Float(r.x) / W * 2 - 1
@@ -341,13 +341,13 @@ final class RenderContext {
         encodeCompositeQuad(enc, src: tex, opacity: 1, quad: quad)
         enc.endEncoding()
         cb.commit()
-        cb.waitUntilCompleted()
+        if wait { cb.waitUntilCompleted() }
     }
 
     func drawOverQuad(_ tex: MTLTexture, into dst: MTLTexture,
                       topLeft tl: SIMD2<Float>, topRight tr: SIMD2<Float>,
                       bottomLeft bl: SIMD2<Float>, bottomRight br: SIMD2<Float>,
-                      canvasW: Int, canvasH: Int) {
+                      canvasW: Int, canvasH: Int, wait: Bool = true) {
         let W = Float(canvasW), H = Float(canvasH)
         func ndc(_ p: SIMD2<Float>) -> SIMD2<Float> { [p.x / W * 2 - 1, 1 - p.y / H * 2] }
         var u = QuadVSUniform(p0: ndc(bl), p1: ndc(br), p2: ndc(tl), p3: ndc(tr))
@@ -366,7 +366,7 @@ final class RenderContext {
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
         cb.commit()
-        cb.waitUntilCompleted()
+        if wait { cb.waitUntilCompleted() }
     }
 
     func flush() {
