@@ -2,7 +2,7 @@
 
 Haze is intended to be a native macOS photo-editing and painting app, built with Swift + Metal. This repo is a **public demo**, shared to gather feedback.
 
-> ⚠️ **Alpha software (v0.1.0).** Haze is under active development. It may crash, and file formats or behavior may change between builds. **Do not use it for important work, and keep backups of anything you care about.**
+> ⚠️ **Alpha software (v0.2.0).** Haze is under active development. It may crash, and file formats or behavior may change between builds. **Do not use it for important work, and keep backups of anything you care about.**
 
 ![Haze main app](docs/images/main-app-demo.webp)
 
@@ -13,8 +13,10 @@ Haze is intended to be a native macOS photo-editing and painting app, built with
   - Shape scatter, Jitter
   - Presets
   - Round and textured (Chalk, Spatter, Sqaure) brushes
+    - Roundness & angle (elliptical brush), Hardness
     - Shape scatter
     - Jitter
+  - Brush-shape cursor (reflects the tip outline, roundness, and angle)
   - Eraser
   - Pressure sensitivity (tablet) support
 - **Undo** - pixel-diff and action history for performant undo
@@ -27,6 +29,7 @@ Haze is intended to be a native macOS photo-editing and painting app, built with
   - Move
   - Free transform (scale / rotate / flip)
 - **Color** - HSV-square picker (8-bit sRGB) with hex, swatches, eyedropper
+- **Gradient** - Linear & radial fill; multi-stop color ramp with per-stop opacity, reverse, and selection clipping
 - **Canvas**
   - Canvas creation with size, backgroun, resolution, DPI
   - Resize (crop, extend, resampling)
@@ -88,7 +91,7 @@ This is an early demo focused on getting the core digital painting features righ
 - **Multi-canvas**
 - **Selections** - feathering, marquee, magic wand
 - **Adjustments** - curves, levels, hue/saturation, blur, liquify
-- **Fill, gradient, clone, and heal**
+- **Fill, clone, and heal**
 - **More blend modes**
 
 ## Feedback

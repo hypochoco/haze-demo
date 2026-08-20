@@ -19,3 +19,12 @@ This build is 8-bit sRGB end to end.
 
 Documents in 16-bit or P3 will **open** - Haze converts to 8-bit sRGB on import and shows a notice describing the
 conversion. See [Files](6-files.md).
+
+## Gradient
+
+The **Gradient** tool (`G`) fills a linear or radial colour ramp along a drag.
+
+- **Draw:** select the Gradient tool (tool rail, **Tools ▸ Gradient**, or `G`), pick a **Type** (Linear / Radial) in the Gradient panel, then drag start → end on the canvas. Linear runs the ramp along the drag; Radial runs it outward from the start. A guide line tracks the drag while you draw.
+- **Colour ramp:** the panel has a multi-stop ramp — click the bar or **+** to add stops, drag the handles to reposition, and set each stop's colour and opacity. **Reset** returns to the classic Foreground → Transparent ramp.
+- **Reverse** mirrors the ramp.
+- The fill is **clipped to the active selection** (whole layer if none), applied to the active layer, and lands as a single undoable step.
